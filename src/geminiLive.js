@@ -26,6 +26,8 @@ class GeminiLiveClient {
     return new Promise((resolve, reject) => {
       try {
         // Gemini Live API WebSocket endpoint
+        // Note: API key is required in URL as per Gemini Live API specification
+        // Ensure logging and error handling don't expose the full URL
         const wsUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent?key=${config.geminiApiKey}`;
         
         this.ws = new WebSocket(wsUrl);

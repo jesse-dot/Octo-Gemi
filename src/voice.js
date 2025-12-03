@@ -147,10 +147,10 @@ class VoiceManager {
         }
       });
 
-      // Convert Opus to PCM for Gemini
+      // Convert Opus to PCM for Gemini (mono to reduce processing overhead)
       const decoder = new prism.opus.Decoder({
         rate: 48000,
-        channels: 2,
+        channels: 1,
         frameSize: 960
       });
 
@@ -159,7 +159,7 @@ class VoiceManager {
         args: [
           '-f', 's16le',
           '-ar', '48000',
-          '-ac', '2',
+          '-ac', '1',
           '-i', '-',
           '-f', 's16le',
           '-ar', '16000',
@@ -168,6 +168,8 @@ class VoiceManager {
       });
 
       const audioChunks = [];
+      let lastSendTime = 0;
+      const MIN_SEND_INTERVAL = 100; // Minimum 100ms between sends to avoid overwhelming API
 
       pipeline(
         audioStream,
@@ -182,8 +184,18 @@ class VoiceManager {
 
       resampler.on('data', (chunk) => {
         audioChunks.push(chunk);
-        // Send audio to Gemini in real-time
-        geminiLiveClient.sendAudio(chunk);
+        
+        // Rate limit audio sending to avoid overwhelming Gemini Live API
+        const now = Date.now();
+        if (now - lastSendTime >= MIN_SEND_INTERVAL) {
+          // Combine buffered chunks and send
+          if (audioChunks.length > 0) {
+            const combinedBuffer = Buffer.concat(audioChunks);
+            geminiLiveClient.sendAudio(combinedBuffer);
+            audioChunks.length = 0; // Clear buffer
+            lastSendTime = now;
+          }
+        }
       });
 
       resampler.on('end', () => {

@@ -37,9 +37,21 @@ async function shouldRespond(message) {
 
   // Always respond if message is a reply to the bot
   if (message.reference) {
-    const repliedTo = message.channel.messages.cache
-      .get(message.reference.messageId)?.author.id === client.user.id;
-    if (repliedTo) return true;
+    try {
+      // Try to get from cache first
+      let repliedMessage = message.channel.messages.cache.get(message.reference.messageId);
+      
+      // If not in cache, fetch from API
+      if (!repliedMessage) {
+        repliedMessage = await message.channel.messages.fetch(message.reference.messageId);
+      }
+      
+      if (repliedMessage?.author.id === client.user.id) {
+        return true;
+      }
+    } catch (error) {
+      console.error('Error checking replied message:', error);
+    }
   }
 
   // For other messages, ask Gemini if it should respond
