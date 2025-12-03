@@ -1,0 +1,35 @@
+{
+  "name": "octo-gemi",
+  "version": "1.0.0",
+  "description": "A Discord bot that uses Google Gemini API to talk like a human and join voice channels",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "gemini",
+    "ai",
+    "voice"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@discordjs/voice": "^0.17.0",
+    "@google/generative-ai": "^0.2.1",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.1",
+    "libsodium-wrappers": "^0.7.13",
+    "ws": "^8.16.0",
+    "prism-media": "^1.3.5",
+    "@discordjs/opus": "^0.9.0"
+  },
+  "optionalDependencies": {
+    "opusscript": "^0.0.8",
+    "sodium-native": "^4.0.4",
+    "ffmpeg-static": "^5.2.0"
+  }
+}
